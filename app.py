@@ -1,9 +1,12 @@
 import os
-
+import json
 import streamlit as st
 import time
 from ai_api_client import ai_client_query
 import concurrent.futures
+
+from prompt import internal_prompt
+
 
 class AIChatApp:
     def __init__(self):
@@ -18,17 +21,13 @@ class AIChatApp:
             st.session_state['selected_model'] = "mistralai/Mixtral-8x7B-Instruct-v0.1"
         if 'loading' not in st.session_state:
             st.session_state['loading'] = False
-        if 'doc' not in st.session_state:
-            st.session_state['doc'] = ''
+
 
     def display_sidebar(self):
         st.sidebar.title("Configurações")
-        models = {
-                    "mistralai/Mixtral-8x7B-Instruct-v0.1": "Mixtral-8x7B Instruct v0.1",
-                    "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free": "DeepSeek R1 70B",
-                     "meta-llama/Llama-3-70b-chat-hf": "Llama-3 70B ",
-                     "Qwen/Qwen2.5-72B-Instruct-Turbo": "Qwen2.5 72B Instruct Turbo ",
-                     "cartesia/sonic-2": "Cartesia/Sonic-2"
+        models = {  'models/gemini-2.0-flash': "Gemini Flash 2.0",
+                    "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free": "Llama-3.3 70B Instruct",
+                    # "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free": "DeepSeek R1 Distill 70B"
         }
 
         model = st.sidebar.selectbox(
@@ -37,13 +36,6 @@ class AIChatApp:
             index=0,
         )
         st.session_state.selected_model = {v: k for k, v in models.items()}.get(model)
-
-        with st.sidebar.container():
-            st.title("Documentos usados:")
-            for doc in [entry.path for entry in os.scandir(os.getenv('DOCUMENT_DIR')) if entry.is_file()]:
-                if st.button(f"📄 {doc.split("/")[-1]}"):
-                    st.session_state.selected_doc = doc
-                    st.switch_page(f"/viewer?doc={doc}")
 
     def display_messages(self):
         for message in st.session_state.messages:
@@ -57,7 +49,7 @@ class AIChatApp:
 
     def chat_loop(self, assistant_response=None):
         if not st.session_state.loading:
-            if prompt := st.chat_input("What is up?"):
+            if prompt := st.chat_input("E ai?") :
                 st.session_state.messages.append({"role": "user", "content": prompt})
 
                 with st.chat_message("user"):
@@ -69,7 +61,10 @@ class AIChatApp:
                     full_response = ""
 
                     with concurrent.futures.ThreadPoolExecutor() as executor:
-                        future = executor.submit(self.get_ai_response, prompt, st.session_state.selected_model)
+                        chat_copy = st.session_state.messages.copy()
+                        chat_copy.insert(0, {"role": "system", "content": internal_prompt})
+
+                        future = executor.submit(self.get_ai_response, json.dumps(chat_copy), st.session_state.selected_model)
 
                         thinking_text = "Pensando..."
                         while not future.done():
@@ -84,8 +79,8 @@ class AIChatApp:
                     for chunk in assistant_response.split():
                         for char in chunk:
                             full_response += char
-                            message_placeholder.markdown(full_response + "▌")
-                            time.sleep(0.035)
+                            message_placeholder.markdown(full_response.replace("\n", "<br>") + "▌", unsafe_allow_html=True)
+                            time.sleep(0.005)
                         full_response += " "
 
                     message_placeholder.markdown(full_response)
@@ -95,7 +90,7 @@ class AIChatApp:
             st.session_state.loading = False
 
     def run(self):
-        st.title("🤖 AI Chat made by ![Luis](github.com/luis-ota)")
+        st.title("🤖 AI Chat feito por [Luis](https://www.github.com/luis-ota)")
         st.caption("RAG para materia de Bigdata.")
 
         self.display_sidebar()

@@ -1,0 +1,8 @@
+python-dotenv==1.1.0
+llama-index==0.12.28
+llama-index-embeddings-together==0.3.0
+llama-index-llms-together==0.3.1
+streamlit==1.44.1
+streamlit-pdf-viewer==0.0.21
+llama-index-llms-gemini==0.4.14
+llama-index-embeddings-google-genai==0.1.0
