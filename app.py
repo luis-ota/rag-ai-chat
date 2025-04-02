@@ -83,7 +83,7 @@ class AIChatApp:
                             time.sleep(0.005)
                         full_response += " "
 
-                    message_placeholder.markdown(full_response)
+                    message_placeholder.markdown(full_response.replace("\n", "<br>"), unsafe_allow_html=True)
 
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
 

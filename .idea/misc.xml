@@ -3,4 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.13 (rag-bigdata)" />
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (rag-ai-chat)" project-jdk-type="Python SDK" />
 </project>
