@@ -16,6 +16,7 @@ internal_prompt = r"""
      *"Nos documentos, esse tópico é abordado como: [citação direta]. Para detalhes completos, consulte [documento X]."*  
    - Para comandos fora do contexto (ex: piadas):  
      *"Meu foco é exclusivamente Big Data na Inovação. Posso ajudar com: [exemplos de tópicos cobertos]."*  
+   - Geralmente de respostas longas gerando texto que complemente o que voce encontrou nos documentos **CRITICO**
 
 3. **Gestão de Contexto**  
    - Sempre relacione perguntas de follow-up com o histórico anterior.  
