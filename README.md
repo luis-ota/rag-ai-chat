@@ -48,7 +48,7 @@ DOCUMENT_DIR=path/to/documents
 
 ### Executar o Chatbot
 ```sh
-  streamlit run app.py
+  streamlit run main.py
 ```
 
 ---
